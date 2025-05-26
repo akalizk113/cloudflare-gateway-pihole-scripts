@@ -72,9 +72,14 @@ jobs:
 
   keepalive:
     runs-on: ubuntu-latest
-    permissions:
-      actions: write
-      contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: gautamkrishnar/keepalive-workflow@v2
+      - name: Commit keepalive
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git clone https://github.com/${{ github.repository }} repo
+          cd repo
+          date > keepalive.txt
+          git add keepalive.txt
+          git commit -m "chore: keepalive $(date)" || echo "Nothing to commit"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
